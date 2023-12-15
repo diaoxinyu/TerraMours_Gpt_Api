@@ -12,9 +12,13 @@
     public class OpenAIOptions
     {
         /// <summary>
-        /// 1token定价
+        /// 1K token定价
         /// </summary>
         public decimal TokenPrice { get; set; }
+        /// <summary>
+        /// 新用户赠送金额
+        /// </summary>
+        public decimal NewUserBalance { get; set; }
         public OpenAI? OpenAI { get; set; }
         public AzureOpenAI? AzureOpenAI { get; set; }
     }
