@@ -178,11 +178,15 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
             var query = _dbContext.ImageRecords.Where(m => (string.IsNullOrEmpty(page.QueryString) || m.Prompt.Contains(page.QueryString)) && m.Enable == true);
             var total = await query.CountAsync();
             var item = await query.OrderByDescending(m => m.CreateDate).Skip((page.PageIndex - 1) * page.PageSize).Take(page.PageSize).ToListAsync();
+            var imageOption = await _dbContext.GptOptions.FirstOrDefaultAsync();
             var res = _mapper.Map<IEnumerable<ImageRes>>(item);
             //获取用户名称缓存
             var sysUser = await _sysUserService.GetUserNameList();
             foreach (var i in res) {
                 i.UserName = sysUser.FirstOrDefault(m => m.Key == i.UserId).Value;
+                // 获取图片路径
+                var baseUrl = imageOption.ImagOptions.ImagFileBaseUrl;
+                i.ImagUrl = baseUrl + i.ImagUrl;
             }
             return ApiResponse<PagedRes<ImageRes>>.Success(new PagedRes<ImageRes>(res, total, page.PageIndex, page.PageSize));
         }
