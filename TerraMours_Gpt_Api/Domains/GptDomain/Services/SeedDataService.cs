@@ -94,6 +94,8 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                     Icon="icon-park-outline:more-app",Version=1,Enable=true,CreateDate=DateTime.Now,CreateID=1,OrderNo=2,ExternalUrl=false,IsHome=false,IsShow=true},
                     new SysMenus(){HasChildren=false,MenuName="聊天记录",MenuUrl="/management/chat",
                     Icon="icon-park-outline:adobe-illustrate",Version=1,Enable=true,CreateDate=DateTime.Now,CreateID=1,OrderNo=0,ExternalUrl=false,IsHome=false,IsShow=true},
+                    new SysMenus(){HasChildren=false,MenuName="AI聊天",MenuUrl="/management/completion",
+                        Icon="icon-park-outline:adobe-illustrate",Version=1,Enable=true,CreateDate=DateTime.Now,CreateID=1,OrderNo=0,ExternalUrl=false,IsHome=false,IsShow=true},
                     new SysMenus(){HasChildren=false,MenuName="数据看板",MenuUrl="/dashboard/analysis",
                     Icon="icon-park-outline:analysis",Version=1,Enable=true,CreateDate=DateTime.Now,CreateID=1,OrderNo=0,ExternalUrl=false,IsHome=false,IsShow=true},
                     new SysMenus(){HasChildren=false,MenuName="敏感词管理",MenuUrl="/management/sensitive",
