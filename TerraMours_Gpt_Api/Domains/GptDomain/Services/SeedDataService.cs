@@ -121,7 +121,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                         });
                         await _dbContext.SysUsers.AddRangeAsync(new[]
                         {
-                    new SysUser("terramours@163.com","terramours@163.com".EncryptDES(_sysSettings.Value.secret.Encrypt)){RoleId=admin.RoleId,Gender="1"}
+                    new SysUser("terramours@163.com","terramours@163.com".EncryptDES(_sysSettings.Value.secret.Encrypt)){RoleId=admin.RoleId,Gender="1",Balance = 0}
                 });
                         if (!await _dbContext.SysSettings.AnyAsync()) {
                             var settins = new SysSettingsEntity(_sysSettings.Value.initial, _sysSettings.Value.email, _alipayOptions.Value);
