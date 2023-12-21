@@ -9,7 +9,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Contracts.Req {
         /// <summary>
         /// 会话id
         /// </summary>
-        public long ConversationId { get; set; }
+        public long? ConversationId { get; set; }
         /// <summary>
         /// 用户id 自增
         /// </summary>

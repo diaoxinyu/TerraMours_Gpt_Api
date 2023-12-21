@@ -59,7 +59,6 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                 var conversation = await _dbContext.ChatConversations.AddAsync(
                     new ChatConversation(req.Prompt.Length < 5 ? req.Prompt : $"{req.Prompt.Substring(0, 5)}...",
                         req.UserId));
-                await _dbContext.SaveChangesAsync();
                 req.ConversationId = conversation.Entity.ConversationId;
             }
 
@@ -98,9 +97,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                     yield break;
                 }
             }
-
-            try
-            {
+            
                 int maxtoken;
                 switch (req.Model)
                 {
@@ -117,18 +114,31 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                             : openAiOptions.OpenAI.MaxTokens);
                         break;
                 }
+
                 AuthOption authOption;
-                if(req.BaseType ==(int) AllInAI.Sharp.API.Enums.AITypeEnum.Baidu) {
+                if (req.BaseType == (int)AllInAI.Sharp.API.Enums.AITypeEnum.Baidu)
+                {
                     AuthService authService = new AuthService(req.BaseUrl);
                     var token = await authService.GetTokenAsyncForBaidu(req.Key.Split(",")[0], req.Key.Split(",")[1]);
-                    authOption = new AuthOption() { Key = token.access_token, BaseUrl = req.BaseUrl, AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType };
+                    authOption = new AuthOption()
+                    {
+                        Key = token.access_token, BaseUrl = req.BaseUrl,
+                        AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
+                    };
                 }
-                else {
-                    authOption = new AuthOption() { Key = req.Key, BaseUrl = req.BaseUrl, AIType =(AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType};
+                else
+                {
+                    authOption = new AuthOption()
+                    {
+                        Key = req.Key, BaseUrl = "http://terramours.site:4150", AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
+                    };
                 }
-                AllInAI.Sharp.API.Service.ChatService chatService = new AllInAI.Sharp.API.Service.ChatService(authOption);
+
+                AllInAI.Sharp.API.Service.ChatService chatService =
+                    new AllInAI.Sharp.API.Service.ChatService(authOption);
                 //调用SDK
-                var response = chatService.CompletionStream(new CompletionReq {
+                var response = chatService.CompletionStream(new CompletionReq
+                {
                     Messages = messegs,
                     Model = req.Model,
                     MaxTokens = maxtoken,
@@ -144,8 +154,6 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                 string totalMsg = "";
                 //创建结果记录
                 var chatRecord = new ChatRecord();
-                await _dbContext.ChatRecords.AddAsync(chatRecord);
-                await _dbContext.SaveChangesAsync();
                 var chatRes = new ChatRes()
                 {
                     ChatRecordId = chatRecord.ChatRecordId,
@@ -163,7 +171,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                             yield break;
                         }
 
-                        totalMsg +=itemMsg.Result ?? itemMsg?.Choices?.FirstOrDefault().Message.Content;
+                        totalMsg += itemMsg.Result ?? itemMsg?.Choices?.FirstOrDefault().Message.Content;
                         chatRes.Message = totalMsg;
                         chatRes.PromptTokens = itemMsg.Usage?.PromptTokens;
                         chatRes.CompletionTokens = itemMsg.Usage?.CompletionTokens;
@@ -182,29 +190,20 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                 }
 
                 if (!isVip)
+                {
                     takesPrice += TokensPrice(totalMsg, req.Model ?? openAiOptions.OpenAI.ChatModel);
-                _mapper.Map(chatRes, chatRecord);
-                _dbContext.ChatRecords.Update(chatRecord);
-
-            }
-            finally
-            {
-                if (isVip)
-                {
-                    _dbContext.SaveChangesAsync();
-                }
-                else
-                {
                     var updateUser = await getSysUser(req.UserId);
                     updateUser.Balance -= takesPrice;
                     updateUser.ModifyDate = DateTime.Now;
                     _logger.Information(
                         $"更新当前用户{updateUser.UserId}，对应版本号:{updateUser.Version},当前余额：{updateUser.Balance}");
                     _dbContext.Update(updateUser);
-                    _dbContext.SaveChangesAsync();
-                    _dbContext.Entry<SysUser>(updateUser).State = EntityState.Detached;
+                    await _dbContext.SaveChangesAsync();
                 }
-            }
+
+                _mapper.Map(chatRes, chatRecord);
+                await _dbContext.ChatRecords.AddAsync(chatRecord);
+                await _dbContext.SaveChangesAsync();
         }
 
 
@@ -212,66 +211,85 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
             openAiOptions = _dbContext.GptOptions.AsNoTracking().Any() ? _dbContext.GptOptions.AsNoTracking().FirstOrDefault().OpenAIOptions : openAiOptions;
             //创建会话
             if (req.ConversationId == null || req.ConversationId == 0) {
-                var conversation = await _dbContext.ChatConversations.AddAsync(new ChatConversation(req.Prompt.Length < 5 ? req.Prompt : $"{req.Prompt.Substring(0, 5)}...", req.UserId));
-                await _dbContext.SaveChangesAsync();
+                var conversation = await _dbContext.ChatConversations.AddAsync(
+                    new ChatConversation(req.Prompt.Length < 5 ? req.Prompt : $"{req.Prompt.Substring(0, 5)}...",
+                        req.UserId));
                 req.ConversationId = conversation.Entity.ConversationId;
             }
 
             var user = await getSysUser(req.UserId);
+            if (user == null) {
+                 return ApiResponse<ChatRes>.Fail("当前用户不存在");
+            }
+
             //敏感词检测
             if (!await Sensitive(req)) {
                  return ApiResponse<ChatRes>.Fail("触发了敏感词");
             }
-            if (user == null)
-            {
-                 return ApiResponse<ChatRes>.Fail("当前用户不存在");
-            }
+
             //最大提问数量判断
             if (await TodayVisits(req.UserId) > openAiOptions.OpenAI.MaxQuestions) {
                 _logger.Warning($"用户【{req.UserId}】超出了单日最大提问数量,最大提问数量（MaxQuestions）请在系统设置中查看。");
                  return ApiResponse<ChatRes>.Fail("超出了单日最大提问数量");
             }
+
             //上下文
             List<MessageDto> messegs = await BuildMsgList(req);
             //计费
             decimal takesPrice = 0;
             //会员判断，非会员或者GPT4或者过期的通过余额扣费
-            bool isVip = user.VipLevel > 0 && user.VipExpireTime > DateTime.Now && !req.Model.Contains("gpt-4");
-            if (!isVip)
+            bool isVip = user.VipLevel > 0 && user.VipExpireTime > DateTime.Now && !req.Model.Contains( "gpt-4");
+            if (!isVip )
             {
                 takesPrice = GetAskPrice(messegs, req.Model ?? openAiOptions.OpenAI.ChatModel);
-
-                if (user.Balance == null || user.Balance <= takesPrice)
+                //判断余额，gpt4时需要余额五元以上
+                if (user.Balance == null || user.Balance < (req.Model == "gpt-4" ? (takesPrice + 5) : takesPrice))
                 {
-                    return ApiResponse<ChatRes>.Fail($"账号余额不足，请充值");
+                     return ApiResponse<ChatRes>.Fail($"账号余额不足，请充值");
                 }
             }
 
-            int maxtoken;
-            switch (req.Model) {
-                case "gpt-4":
-                    maxtoken = (int)((req.MaxTokens !=null && req.MaxTokens<4000)? req.MaxTokens: 4000);
-                    break;
-                case "gpt-3.5-turbo-16k":
-                    maxtoken = (int)((req.MaxTokens != null && req.MaxTokens < 4000) ? req.MaxTokens : 4000);
-                    break;
-                default:
-                    maxtoken = (int)((req.MaxTokens != null && req.MaxTokens < openAiOptions.OpenAI.MaxTokens) ? req.MaxTokens : openAiOptions.OpenAI.MaxTokens) ;
-                    break;
-            }
-            AuthOption authOption;
-            if (req.BaseType == (int)AllInAI.Sharp.API.Enums.AITypeEnum.Baidu) {
-                AuthService authService = new AuthService(req.BaseUrl);
-                var token = await authService.GetTokenAsyncForBaidu(req.Key.Split(",")[0], req.Key.Split(",")[1]);
-                authOption = new AuthOption() { Key = token.access_token, BaseUrl = req.BaseUrl, AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType };
-            }
-            else {
-                authOption = new AuthOption() { Key = req.Key, BaseUrl = req.BaseUrl, AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType };
-            }
-            AllInAI.Sharp.API.Service.ChatService chatService = new AllInAI.Sharp.API.Service.ChatService(authOption);
+                int maxtoken;
+                switch (req.Model)
+                {
+                    case "gpt-4":
+                        maxtoken = (int)((req.MaxTokens != null && req.MaxTokens < 4000) ? req.MaxTokens : 4000);
+                        break;
+                    case "gpt-3.5-turbo-16k":
+                        maxtoken = (int)((req.MaxTokens != null && req.MaxTokens < 4000) ? req.MaxTokens : 4000);
+                        break;
+                    default:
+                        maxtoken = (int)((req.MaxTokens != null &&
+                                          req.MaxTokens < openAiOptions.OpenAI.MaxTokens)
+                            ? req.MaxTokens
+                            : openAiOptions.OpenAI.MaxTokens);
+                        break;
+                }
+
+                AuthOption authOption;
+                if (req.BaseType == (int)AllInAI.Sharp.API.Enums.AITypeEnum.Baidu)
+                {
+                    AuthService authService = new AuthService(req.BaseUrl);
+                    var token = await authService.GetTokenAsyncForBaidu(req.Key.Split(",")[0], req.Key.Split(",")[1]);
+                    authOption = new AuthOption()
+                    {
+                        Key = token.access_token, BaseUrl = req.BaseUrl,
+                        AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
+                    };
+                }
+                else
+                {
+                    authOption = new AuthOption()
+                    {
+                        Key = req.Key, BaseUrl = "http://terramours.site:4150", AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
+                    };
+                }
+
+                AllInAI.Sharp.API.Service.ChatService chatService =
+                    new AllInAI.Sharp.API.Service.ChatService(authOption);
             //调用SDK
 
-            var response = chatService.Completion(new CompletionReq {
+            var response =await chatService.Completion(new CompletionReq {
                 Messages = messegs,
                 Model = req.Model ?? openAiOptions.OpenAI.ChatModel,
                 MaxTokens = maxtoken,
@@ -285,20 +303,20 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
             });
             if (response == null)
                 return ApiResponse<ChatRes>.Fail("接口调用失败");
-            if (!response.Result.Successful) {
-                _logger.Error($"接口调用失败，key：{req.Key},报错内容：{response.Result.Error.Message}");
-                return ApiResponse<ChatRes>.Fail(response.Result.Error.Message);
+            if (!response.Successful) {
+                _logger.Error($"接口调用失败，key：{req.Key},报错内容：{response.Error.Message}");
+                return ApiResponse<ChatRes>.Fail(response.Error.Message);
             }
-            var chatRes = new ChatRes() { Role = "assistant", Message =response.Result.Result ?? response.Result.Choices.FirstOrDefault().Message.Content, Model = req.Model, ModelType = req.ModelType, ConversationId = req.ConversationId, CreateDate = DateTime.Now, UserId = req.UserId, Enable = true };
-            chatRes.PromptTokens = response.Result.Usage?.PromptTokens;
-            chatRes.CompletionTokens = response.Result.Usage?.CompletionTokens;
-            chatRes.TotalTokens = response.Result.Usage?.TotalTokens ?? (response.Result.Usage?.PromptTokens+ response.Result.Usage?.CompletionTokens);
+            var chatRes = new ChatRes() { Role = "assistant", Message =response.Result ?? response.Choices.FirstOrDefault().Message.Content, Model = req.Model, ModelType = req.ModelType, ConversationId = req.ConversationId, CreateDate = DateTime.Now, UserId = req.UserId, Enable = true };
+            chatRes.PromptTokens = response.Usage?.PromptTokens;
+            chatRes.CompletionTokens = response.Usage?.CompletionTokens;
+            chatRes.TotalTokens = response.Usage?.TotalTokens ?? (response.Usage?.PromptTokens+ response.Usage?.CompletionTokens);
             
             var chatRecord = _mapper.Map<ChatRecord>(chatRes);
             await _dbContext.ChatRecords.AddAsync(chatRecord);
             if (!isVip)
             {
-                takesPrice += TokensPrice(response.Result.Choices.FirstOrDefault().Message.Content,
+                takesPrice += TokensPrice(response.Choices.FirstOrDefault().Message.Content,
                     req.Model ?? openAiOptions.OpenAI.ChatModel);
                 user.Balance -= takesPrice;
                 _dbContext.SysUsers.Update(user);
@@ -889,7 +907,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                 ConversationId = req.ConversationId, CreateDate = DateTime.Now, UserId = req.UserId, Enable = true
             };
             await _dbContext.ChatRecords.AddAsync(chat);
-            //await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
             return messegs;
         }
 
