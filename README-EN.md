@@ -1,5 +1,5 @@
 <div align="center">
-	<h1>TerraMours Admin</h1>
+	<h1>TerraMours Api</h1>
 </div>
 
 [![license](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE) ![](https://img.shields.io/github/stars/TerraMours/TerraMours_Admin_Web) ![](https://img.shields.io/github/forks/TerraMours/TerraMours_Admin_Web)
@@ -45,7 +45,13 @@ Core features:
 
 ## Update History
 
-2023.12.4 V1.6 NEW!:
+2023.12.21 V1.7 NEW!：
+1. Add chat module to the management system.
+2. Fix bug in saving chat records.
+3. Fix bug in displaying images.
+4. Optimize the initialization data of the database.
+
+2023.12.15 V1.6：
 
 1. Role configuration module added: 1. Added role configuration for administrators. 2. Added default role configuration for new users.
 2. Added setting to give bonus balance to new users upon registration.
