@@ -45,7 +45,7 @@ Core features:
 
 ## Update History
 
-2023.12.4 V1.5 NEW!:
+2023.12.4 V1.6 NEW!:
 
 1. Role configuration module added: 1. Added role configuration for administrators. 2. Added default role configuration for new users.
 2. Added setting to give bonus balance to new users upon registration.

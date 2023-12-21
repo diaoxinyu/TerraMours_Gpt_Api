@@ -186,7 +186,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                 i.UserName = sysUser.FirstOrDefault(m => m.Key == i.UserId).Value;
                 // 获取图片路径
                 var baseUrl = imageOption.ImagOptions.ImagFileBaseUrl;
-                i.ImagUrl = baseUrl + i.ImagUrl;
+                i.ImagUrl =i.ImagUrl.StartsWith("http") ? i.ImagUrl:(baseUrl + i.ImagUrl);
             }
             return ApiResponse<PagedRes<ImageRes>>.Success(new PagedRes<ImageRes>(res, total, page.PageIndex, page.PageSize));
         }
