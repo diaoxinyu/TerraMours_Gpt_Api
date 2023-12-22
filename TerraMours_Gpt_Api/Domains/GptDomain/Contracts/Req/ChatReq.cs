@@ -29,6 +29,11 @@ namespace TerraMours_Gpt.Domains.GptDomain.Contracts.Req {
         /// 模型类型
         /// </summary>
         public int? ModelType { get; set; }   
+        
+        /// <summary>
+        /// 图文分析文件url（只适用于gpt-4-vision-preview）
+        /// </summary>
+        public string? FileUrl { get; set; }
     }
     
 }

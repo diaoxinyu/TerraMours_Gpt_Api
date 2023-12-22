@@ -149,6 +149,7 @@ namespace TerraMours.Domains.LoginDomain.Services
                 return ApiResponse<bool>.Fail("用户不存在");
             }
             menu.Change(_mapper,req);
+            _dbContext.SysMenus.Update(menu);
             _dbContext.SaveChanges();
             return ApiResponse<bool>.Success(true);
         }
