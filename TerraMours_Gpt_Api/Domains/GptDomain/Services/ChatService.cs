@@ -130,7 +130,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                 {
                     authOption = new AuthOption()
                     {
-                        Key = req.Key, BaseUrl = "http://terramours.site:4150", AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
+                        Key = req.Key, BaseUrl = req.BaseUrl, AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
                     };
                 }
 
@@ -281,7 +281,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                 {
                     authOption = new AuthOption()
                     {
-                        Key = req.Key, BaseUrl = "http://terramours.site:4150", AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
+                        Key = req.Key, BaseUrl = req.BaseUrl, AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
                     };
                 }
 
