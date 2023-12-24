@@ -130,7 +130,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                 {
                     authOption = new AuthOption()
                     {
-                        Key = req.Key, BaseUrl = "http://terramours.site:4150", AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
+                        Key = req.Key, BaseUrl = req.BaseUrl, AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
                     };
                 }
 
@@ -281,7 +281,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                 {
                     authOption = new AuthOption()
                     {
-                        Key = req.Key, BaseUrl = "http://terramours.site:4150", AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
+                        Key = req.Key, BaseUrl = req.BaseUrl, AIType = (AllInAI.Sharp.API.Enums.AITypeEnum)req.BaseType
                     };
                 }
 
@@ -866,10 +866,10 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
         {
             openAiOptions = _dbContext.GptOptions.AsNoTracking().Any() ? _dbContext.GptOptions.AsNoTracking().FirstOrDefault().OpenAIOptions : openAiOptions;
             //根据配置中的CONTEXT_COUNT 查询上下文
-            var messegs = new List<MessageDto>();
+            var messages = new List<MessageDto>();
             if (!string.IsNullOrEmpty(req.SystemMessage))
             {
-                messegs.Add(new MessageDto() { Role="system",Content= req.SystemMessage });
+                messages.Add(new MessageDto() { Role="system",Content= req.SystemMessage });
             }
 
             var parentMessages = _dbContext.ChatRecords
@@ -883,32 +883,62 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
                 switch (parentMessages[i].Role)
                 {
                     case "assistant":
-                        messegs.Add(new MessageDto() { Role = "assistant", Content = parentMessages[i].Message });
+                        messages.Add(new MessageDto() { Role = "assistant", Content = parentMessages[i].Message });
                         break;
                     case "system":
-                        messegs.Add(new MessageDto() { Role = "system", Content = parentMessages[i].Message });
+                        messages.Add(new MessageDto() { Role = "system", Content = parentMessages[i].Message });
                         break;
                     case "user":
-                        messegs.Add(new MessageDto() { Role = "user", Content = parentMessages[i].Message });
+                        if (parentMessages[i].Model == "gpt-4-vision-preview")
+                        {
+                            messages.Add(new MessageDto() { Role = "user", Contents= JsonSerializer.Deserialize<List<MessageContent>>(parentMessages[i].Message) });
+                        }
+                        else
+                        {
+                            messages.Add(new MessageDto() { Role = "user", Content = parentMessages[i].Message });
+                        }
                         break;
                 }
             }
 
+            ChatRecord chat;
             //当前问题
-            messegs.Add(new MessageDto() { Role = "user", Content = req.Prompt });
-            _logger.Information(
-                $"[{DateTime.Now.ToString()}]{req.UserId} 提问内容：{JsonSerializer.Serialize(req.Prompt, new JsonSerializerOptions()
+            if (req.FileUrl != null)
+            {
+                List<MessageContent>? Contents=new List<MessageContent>();
+                Contents.Add(MessageContent.TextContent(req.Prompt));
+                Contents.Add(MessageContent.ImageUrlContent(req.FileUrl));
+                messages.Add(new MessageDto() { Role = "user", Contents= Contents });
+                var jsonStr = JsonSerializer.Serialize(Contents, new JsonSerializerOptions()
                 {
                     Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-                })}");
-            var chat = new ChatRecord()
+                });
+                _logger.Information(
+                    $"[{DateTime.Now.ToString()}]{req.UserId} 提问内容：{jsonStr}");
+                chat = new ChatRecord()
+                {
+                    Role = "user", Message = jsonStr, Model = req.Model, ModelType = req.ModelType,
+                    ConversationId = req.ConversationId, CreateDate = DateTime.Now, UserId = req.UserId, Enable = true
+                };
+            }
+            else
             {
-                Role = "user", Message = req.Prompt, Model = req.Model, ModelType = req.ModelType,
-                ConversationId = req.ConversationId, CreateDate = DateTime.Now, UserId = req.UserId, Enable = true
-            };
+                messages.Add(new MessageDto() { Role = "user", Content = req.Prompt });
+                _logger.Information(
+                    $"[{DateTime.Now.ToString()}]{req.UserId} 提问内容：{JsonSerializer.Serialize(req.Prompt, new JsonSerializerOptions()
+                    {
+                        Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+                    })}");
+                chat = new ChatRecord()
+                {
+                    Role = "user", Message = req.Prompt, Model = req.Model, ModelType = req.ModelType,
+                    ConversationId = req.ConversationId, CreateDate = DateTime.Now, UserId = req.UserId, Enable = true
+                };
+            }
+            
             await _dbContext.ChatRecords.AddAsync(chat);
             await _dbContext.SaveChangesAsync();
-            return messegs;
+            return messages;
         }
 
         /// <summary>
