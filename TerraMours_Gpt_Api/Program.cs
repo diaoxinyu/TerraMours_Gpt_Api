@@ -216,7 +216,7 @@ builder.Services.AddSwaggerGen(options => {
         }
     });
     //配置XML备注文档
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "TerraMours_Gpt.xml"));
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "TerraMours_Gpt_Api.xml"));
 });
 //添加认证  授权服务
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
@@ -235,10 +235,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 var app = builder.Build();
 
-//初始化数据库
 using var scope = app.Services.CreateScope();
 
 var services = scope.ServiceProvider;
+//初始化数据库
 
 var initialiser = services.GetRequiredService<DbInitialiser>();
 
