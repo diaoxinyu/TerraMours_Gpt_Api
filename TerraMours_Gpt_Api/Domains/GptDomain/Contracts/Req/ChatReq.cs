@@ -1,4 +1,5 @@
 ﻿
+using FluentValidation;
 using System.Text.Json.Serialization;
 
 namespace TerraMours_Gpt.Domains.GptDomain.Contracts.Req {
@@ -35,5 +36,33 @@ namespace TerraMours_Gpt.Domains.GptDomain.Contracts.Req {
         /// </summary>
         public string? FileUrl { get; set; }
     }
-    
+    /// <summary>
+    /// 文本嵌入
+    /// </summary>
+    public class EmbedReq:BaseModelReq {
+        [JsonIgnore]
+        public List<string>? InputAsList { get; set; }
+        [JsonIgnore]
+        public string? Input { get; set; }
+
+
+        [JsonPropertyName("input")]
+        public IList<string>? InputCalculated
+        {
+            get
+            {
+                if (Input != null && InputAsList != null)
+                {
+                    throw new ValidationException("Input and InputAsList can not be assigned at the same time. One of them is should be null.");
+                }
+
+                if (Input != null)
+                {
+                    return new List<string> { Input };
+                }
+
+                return InputAsList;
+            }
+        }
+    }
 }

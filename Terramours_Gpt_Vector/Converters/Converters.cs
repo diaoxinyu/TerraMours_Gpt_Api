@@ -72,7 +72,6 @@ namespace Terramours_Gpt_Vector.Converters {
     public class MetadataValueConverter : JsonConverter<MetadataValue> {
         public override MetadataValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) =>
             ReadValue(ref reader);
-
         public override void Write(Utf8JsonWriter writer, MetadataValue value, JsonSerializerOptions options) =>
             WriteValue(writer, value);
 
@@ -138,4 +137,6 @@ namespace Terramours_Gpt_Vector.Converters {
             writer.WriteEndObject();
         }
     }
+
+
 }

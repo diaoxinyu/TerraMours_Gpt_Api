@@ -1,12 +1,13 @@
-﻿using Newtonsoft.Json;
-using Pgvector;
+﻿using Pgvector;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
+using Terramours_Gpt_Vector.Converters;
 using Terramours_Gpt_Vector.Dto;
 
 namespace Terramours_Gpt_Vector.Entities
 {
-    public class VectorItem
+    public class VectorItem: BaseEntity
     {
         [Key]
         public int VectorId { get; set; }
@@ -21,8 +22,8 @@ namespace Terramours_Gpt_Vector.Entities
         [Column("Metadata", TypeName = "jsonb")]
         public string? MetadataJson
         {
-            get => Metadata != null ? JsonConvert.SerializeObject(Metadata) : null;
-            set => Metadata = !string.IsNullOrEmpty(value) ? JsonConvert.DeserializeObject<MetadataMap>(value) : null;
+            get => Metadata != null ? JsonSerializer.Serialize(Metadata) : null;
+            set => Metadata = !string.IsNullOrEmpty(value) ? JsonSerializer.Deserialize<MetadataMap>(value) : null; 
         }
 
         public string IndexName { get; set; }

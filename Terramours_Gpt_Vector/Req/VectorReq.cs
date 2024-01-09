@@ -15,7 +15,7 @@ namespace Terramours_Gpt_Vector.Req
         public SparseVector? SparseVector { get; set; }
         public uint TopK { get; init; }
         public MetadataMap? Filter { get; init; }
-        public string Namespace { get; init; }
+        public string? Namespace { get; init; }
         public bool IncludeValues { get; init; }
         public bool IncludeMetadata { get; init; }
     }
@@ -26,11 +26,11 @@ namespace Terramours_Gpt_Vector.Req
     }
     public record VectorUpdateReq: BaseReq
     {
-        public required string Id { get; init; }
-        public required float[] Values { get; init; }
-        public SparseVector? SparseValues { get; init; }
-        public MetadataMap? SetMetadata { get; init; }
-        public string Namespace { get; init; }
+        public  string? Id { get; set; }
+        public  float[]? Values { get; set; }
+        public SparseVector? SparseValues { get; set; }
+        public MetadataMap? SetMetadata { get; set; }
+        public string? Namespace { get; set; }
     }
     public record VectorDeleteReq : BaseReq
     {

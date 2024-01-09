@@ -2,9 +2,11 @@
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Req;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Res;
 
-namespace TerraMours_Gpt_Api.Domains.GptDomain.IServices {
-    public interface IVectorService {
-        Task<ApiResponse<List<VectorRes>>> GetList(int KnowledgeId);
+namespace TerraMours_Gpt_Api.Domains.GptDomain.IServices
+{
+    public interface IKnowledgeService
+    {
+        Task<ApiResponse<List<KnowledgeRes>>> GetList(long userId);
 
         /// <summary>
         /// 删除
@@ -17,19 +19,19 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.IServices {
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<List<VectorRes>>> Query(VectorQueryReq req);
+        Task<ApiResponse<List<KnowledgeRes>>> Query(int id);
         /// <summary>
         /// 更新
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<bool>> Update(VectorUpdateReq req);
+        Task<ApiResponse<bool>> Update(KnowledgeUpdateReq req);
 
         /// <summary>
         /// 插入
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<VectorRes>> Upsert(VectorReq req);
+        Task<ApiResponse<KnowledgeRes>> Upsert(KnowledgeReq req);
     }
 }

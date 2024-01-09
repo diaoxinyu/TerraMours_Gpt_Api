@@ -29,7 +29,9 @@ namespace Terramours_Gpt_Vector.Service
             {
                 throw new NullReferenceException("未别找到对应对象");
             }
-            _dbContext.vectorItems.Remove(vector);
+            vector.UpdateTime = DateTime.UtcNow;
+            vector.IsDeleted = true;
+            _dbContext.vectorItems.Update(vector);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -39,13 +41,13 @@ namespace Terramours_Gpt_Vector.Service
             {
                 throw new NullReferenceException("Vector必传");
             }
-            if (req.TopK == null)
+            if (req.TopK == 0)
             {
                 throw new NullReferenceException("TopK必传");
             }
             var embedding = new Vector(req.Vector);
             var items = await _dbContext.vectorItems
-                .Where(m=> m.IndexName == req.Index && (req.Namespace == null || m.Namespace == req.Namespace))
+                .Where(m=>m.IsDeleted==false && m.IndexName == req.Index && (req.Namespace == null || m.Namespace == req.Namespace))
             .OrderBy(x => x.Embedding!.L2Distance(embedding))
             .Take((int)req.TopK)
             .ToListAsync();
@@ -99,6 +101,7 @@ namespace Terramours_Gpt_Vector.Service
             item.Metadata = req.SetMetadata;
             if(req.Id != null) item.Id = req.Id;
             if (req.Values != null) item.Embedding = new Vector(req.Values);
+            item.UpdateTime = DateTime.UtcNow;
             _dbContext.Update(item);
             await _dbContext.SaveChangesAsync();
         }
@@ -113,12 +116,14 @@ namespace Terramours_Gpt_Vector.Service
             {
                 VectorItem vector = new VectorItem()
                 {
-                    Id=item.Id,
+                    Id = item.Id,
                     Embedding = new Vector(item.Values),
-                    SparseValues=item.SparseValues,
+                    //SparseValues = item.SparseValues,
                     Metadata = item.Metadata,
-                    Namespace=req.Namespace,
-                    IndexName=req.Index
+                    Namespace = req.Namespace,
+                    IndexName = req.Index,
+                    CreateTime = DateTime.UtcNow,
+                    IsDeleted = false
                 };
                 await _dbContext.AddAsync(vector);
             }

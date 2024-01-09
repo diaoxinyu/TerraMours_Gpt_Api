@@ -34,6 +34,8 @@
 ## 更新数据库
 ```
 Add-Migration update
+
+update-database
 ```
 
 ## 开源作者

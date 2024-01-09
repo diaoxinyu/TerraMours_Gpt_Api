@@ -406,5 +406,9 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Controllers {
         }
 
         #endregion
+
+        #region 文本嵌入
+
+        #endregion
     }
 }

@@ -7,9 +7,7 @@ namespace Terramours_Gpt_Vector.Commons
         public static T GetHeader<T>(T item,HttpRequest request) where T : BaseReq
         {
             string apiKey = request.Headers["Api-Key"];
-            string index = request.Headers["index"];
             item.Key = apiKey;
-            item.Index = index;
             return item;
         }
     }

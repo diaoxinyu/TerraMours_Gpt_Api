@@ -10,6 +10,8 @@ namespace Terramours_Gpt_Vector.Commons
         {
         }
         public DbSet<VectorItem> vectorItems { get; set; }
+        public DbSet<ApiKey> apiKeys { get; set; }
+        public DbSet<IndexItem> indexItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +28,24 @@ namespace Terramours_Gpt_Vector.Commons
                 .HasOperators("vector_l2_ops")
                 .HasStorageParameter("lists", 100);
                 entity.Property(e => e.SparseValues).IsRequired(false).HasColumnType("jsonb");
+            });
+            modelBuilder.Entity<IndexItem>(entity =>
+            {
+                //设置表主键
+                entity.HasKey(e => e.IndexId);
+                //设置主键自增
+                entity.Property(e => e.IndexId)
+                       .UseIdentityColumn();
+                entity.HasIndex(i => i.Key);
+            });
+            modelBuilder.Entity<ApiKey>(entity =>
+            {
+                //设置表主键
+                entity.HasKey(e => e.KeyId);
+                //设置主键自增
+                entity.Property(e => e.KeyId)
+                       .UseIdentityColumn();
+                entity.HasIndex(i => i.ThirdPartId);
             });
         }
     }
