@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using System.Text;
 using TerraMours.Domains.LoginDomain.Contracts.Common;
@@ -16,7 +15,6 @@ using TerraMours.Framework.Infrastructure.EFCore;
 using TerraMours.Framework.Infrastructure.Redis;
 using TerraMours.Framework.Infrastructure.Utils;
 using TerraMours_Gpt.Domains.LoginDomain.Contracts.Req;
-using TerraMours_Gpt.Framework.Infrastructure.Contracts.Commons;
 
 namespace TerraMours.Domains.LoginDomain.Services
 {
@@ -151,8 +149,8 @@ namespace TerraMours.Domains.LoginDomain.Services
 
             // 2. 从 appsettings.json 中读取SecretKey
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_sysSettings.Value.jwt.SecretKey));
-
-            // 3. 选择加密算法
+            secretKey = ExtendKeyLengthIfNeeded(secretKey, 32);
+;            // 3. 选择加密算法
             var algorithm = SecurityAlgorithms.HmacSha256;
 
             // 4. 生成Credentials
@@ -169,14 +167,23 @@ namespace TerraMours.Domains.LoginDomain.Services
                 DateTime.Now,                    //notBefore
                 DateTime.Now.AddDays(expires),   //expires
                 signingCredentials               //Credentials
-            );
+            ) ;
 
             // 7. 将token变为string
             var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
 
             return jwtToken;
         }
-
+        SymmetricSecurityKey ExtendKeyLengthIfNeeded(SymmetricSecurityKey key, int minLenInBytes)
+        {
+            if (key != null && key.KeySize < (minLenInBytes * 8))
+            {
+                var newKey = new byte[minLenInBytes]; // zeros by default
+                key.Key.CopyTo(newKey, 0);
+                return new SymmetricSecurityKey(newKey);
+            }
+            return key;
+        }
         /// <summary>
         /// 全部用户列表 todo：jwt添加权限
         /// </summary>

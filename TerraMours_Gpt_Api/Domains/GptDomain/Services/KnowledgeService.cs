@@ -1,35 +1,75 @@
-﻿using TerraMours.Domains.LoginDomain.Contracts.Common;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using TerraMours.Domains.LoginDomain.Contracts.Common;
+using TerraMours.Framework.Infrastructure.EFCore;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Req;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Res;
 using TerraMours_Gpt_Api.Domains.GptDomain.IServices;
+using TerraMours_Gpt_Api.Framework.Infrastructure.Contracts.GptModels;
 
 namespace TerraMours_Gpt_Api.Domains.GptDomain.Services
 {
     public class KnowledgeService : IKnowledgeService
     {
-        public Task<ApiResponse<bool>> Delete(int id)
+        private readonly FrameworkDbContext _dbContext;
+        private readonly Serilog.ILogger _logger;
+        private readonly IMapper _mapper;
+
+        public KnowledgeService(FrameworkDbContext dbContext, Serilog.ILogger logger, IMapper mapper)
         {
-            throw new NotImplementedException();
+            _dbContext = dbContext;
+            _logger = logger;
+            _mapper = mapper;
         }
 
-        public Task<ApiResponse<List<KnowledgeRes>>> GetList(long userId)
+        public async Task<ApiResponse<bool>> Delete(int id, long userId)
         {
-            throw new NotImplementedException();
+            var res=await _dbContext.knowledgeItems.FirstOrDefaultAsync(m => m.KnowledgeId == id);
+            if(res == null)
+            {
+                return ApiResponse<bool>.Fail("未初始化数据");
+            }
+            res.Delete(userId);
+            _dbContext.knowledgeItems.Update(res);
+             await _dbContext.SaveChangesAsync();
+            return ApiResponse<bool>.Success(true);
         }
 
-        public Task<ApiResponse<List<KnowledgeRes>>> Query(int id)
+        public async Task<ApiResponse<List<KnowledgeRes>>> GetList(long userId)
         {
-            throw new NotImplementedException();
+            var list =await _dbContext.knowledgeItems.Where(m => m.CreateID == userId || m.IsCommon == true).ToListAsync();
+            var res= _mapper.Map<List<KnowledgeRes>>(list);
+            return ApiResponse<List<KnowledgeRes>>.Success(res);
         }
 
-        public Task<ApiResponse<bool>> Update(KnowledgeUpdateReq req)
+        public async Task<ApiResponse<KnowledgeRes>> Query(int id, long userId)
         {
-            throw new NotImplementedException();
+            var result = await _dbContext.knowledgeItems.FirstOrDefaultAsync(m => m.KnowledgeId == id);
+            var res = _mapper.Map<KnowledgeRes>(result);
+            return ApiResponse<KnowledgeRes>.Success(res);
         }
 
-        public Task<ApiResponse<KnowledgeRes>> Upsert(KnowledgeReq req)
+        public async Task<ApiResponse<bool>> Update(KnowledgeUpdateReq req, long userId)
         {
-            throw new NotImplementedException();
+            var res = _mapper.Map<KnowledgeItem>(req);
+            res.ModifyDate = DateTime.Now;
+            res.ModifyID = userId;
+            _dbContext.knowledgeItems.Update(res);
+            await _dbContext.SaveChangesAsync();
+            return ApiResponse<bool>.Success(true);
+        }
+
+        public async Task<ApiResponse<KnowledgeRes>> Upsert(KnowledgeReq req, long userId)
+        {
+            var res = _mapper.Map<KnowledgeItem>(req);
+            res.CreateDate = DateTime.Now;
+            res.Enable = true;
+            res.CreateID = userId;
+            await _dbContext.knowledgeItems.AddAsync(res);
+            await _dbContext.SaveChangesAsync();
+            var result= _mapper.Map<KnowledgeRes>(res);
+            return ApiResponse < KnowledgeRes >.Success(result);
         }
     }
 }

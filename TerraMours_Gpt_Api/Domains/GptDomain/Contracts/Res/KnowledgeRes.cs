@@ -23,5 +23,9 @@
         /// 工作空间
         /// </summary>
         public string? NamespaceName { get; set; }
+        /// <summary>
+        /// 代理地址，只在pgvector中使用
+        /// </summary>
+        public string? BaseUrl { get; set; }
     }
 }

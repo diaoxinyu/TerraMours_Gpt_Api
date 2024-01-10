@@ -44,6 +44,11 @@ using TerraMours_Gpt.Domains.PayDomain.Hubs;
 using Microsoft.OpenApi.Models;
 using TerraMours_Gpt.Framework.Infrastructure.Contracts;
 using TerraMours_Gpt.Framework.Infrastructure.Contracts.ProductModels;
+using TerraMours_Gpt_Api.Domains.GptDomain.IServices;
+using TerraMours_Gpt_Api.Domains.GptDomain.Services;
+using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Res;
+using TerraMours_Gpt_Api.Framework.Infrastructure.Contracts.GptModels;
+using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Req;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
@@ -76,6 +81,8 @@ MapperConfiguration mapperConfig = new(cfg => {
     cfg.CreateMap<CategoryReq, Category>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
     cfg.CreateMap<Category, CategoryRes>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
     cfg.CreateMap<Order, OrderRes>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+    cfg.CreateMap<KnowledgeItem, KnowledgeRes>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+    cfg.CreateMap<KnowledgeReq, KnowledgeItem>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 });
 //注册配置
 IMapper mapper = mapperConfig.CreateMapper();
@@ -98,6 +105,9 @@ builder.Services.AddScoped<IPayService, AliPayService>();
 //商品服务
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+//知识库
+builder.Services.AddScoped<IKnowledgeService,KnowledgeService>();
+builder.Services.AddScoped<IVectorService,VectorService>();
 //初始化
 builder.Services.AddTransient<DbInitialiser>();
 // 添加Paylink依赖注入

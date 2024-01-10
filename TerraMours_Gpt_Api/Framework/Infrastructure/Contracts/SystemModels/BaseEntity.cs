@@ -46,5 +46,12 @@
         /// </summary>
         public int? OrderNo { get; set; }
 
+        public void Delete(long userId)
+        {
+            this.ModifyDate = DateTime.Now;
+            this.Enable = false;
+            this.ModifyID = userId;
+        }
+
     }
 }

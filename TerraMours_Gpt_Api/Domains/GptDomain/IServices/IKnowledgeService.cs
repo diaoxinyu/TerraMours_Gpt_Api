@@ -13,25 +13,27 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.IServices
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<bool>> Delete(int id);
+        Task<ApiResponse<bool>> Delete(int id, long userId);
         /// <summary>
         /// 查询
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<List<KnowledgeRes>>> Query(int id);
+        Task<ApiResponse<KnowledgeRes>> Query(int id, long userId);
         /// <summary>
         /// 更新
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<bool>> Update(KnowledgeUpdateReq req);
+        Task<ApiResponse<bool>> Update(KnowledgeUpdateReq req, long userId);
 
         /// <summary>
         /// 插入
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<KnowledgeRes>> Upsert(KnowledgeReq req);
+        Task<ApiResponse<KnowledgeRes>> Upsert(KnowledgeReq req, long userId);
+
+
     }
 }

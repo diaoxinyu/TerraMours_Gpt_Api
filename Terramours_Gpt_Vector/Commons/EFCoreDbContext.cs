@@ -23,6 +23,7 @@ namespace Terramours_Gpt_Vector.Commons
                 //设置主键自增
                 entity.Property(e => e.VectorId)
                        .UseIdentityColumn();
+                entity.HasQueryFilter(e => e.IsDeleted == false);
                 entity.HasIndex(i => i.Embedding)
                 .HasMethod("ivfflat")
                 .HasOperators("vector_l2_ops")
@@ -36,6 +37,7 @@ namespace Terramours_Gpt_Vector.Commons
                 //设置主键自增
                 entity.Property(e => e.IndexId)
                        .UseIdentityColumn();
+                entity.HasQueryFilter(e => e.IsDeleted == false);
                 entity.HasIndex(i => i.Key);
             });
             modelBuilder.Entity<ApiKey>(entity =>
@@ -45,6 +47,7 @@ namespace Terramours_Gpt_Vector.Commons
                 //设置主键自增
                 entity.Property(e => e.KeyId)
                        .UseIdentityColumn();
+                entity.HasQueryFilter(e => e.IsDeleted == false);
                 entity.HasIndex(i => i.ThirdPartId);
             });
         }

@@ -4,6 +4,7 @@ using TerraMours_Gpt.Framework.Infrastructure.Contracts.GptModels;
 using TerraMours_Gpt.Framework.Infrastructure.Contracts.PaymentModels;
 using TerraMours_Gpt.Framework.Infrastructure.Contracts.ProductModels;
 using TerraMours_Gpt.Framework.Infrastructure.Contracts.SystemModels;
+using TerraMours_Gpt_Api.Framework.Infrastructure.Contracts.GptModels;
 
 namespace TerraMours.Framework.Infrastructure.EFCore
 {
@@ -34,6 +35,9 @@ namespace TerraMours.Framework.Infrastructure.EFCore
 
         public DbSet<Category> Categorys { get; set; }
         public DbSet<Product> Products { get; set; }
+        #region 知识库
+        public DbSet<KnowledgeItem> knowledgeItems { get; set; }
+        #endregion
 
         #endregion
 

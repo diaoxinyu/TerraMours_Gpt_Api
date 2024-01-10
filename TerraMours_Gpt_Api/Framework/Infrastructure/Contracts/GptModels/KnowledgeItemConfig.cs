@@ -14,6 +14,7 @@ public void Configure(EntityTypeBuilder<KnowledgeItem> builder)
             //设置主键自增
             builder.Property(e => e.KnowledgeId)
                    .UseIdentityColumn();
+            builder.HasQueryFilter(e => e.Enable);
             builder.HasIndex(i => i.ApiKey);
         }
     }

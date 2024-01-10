@@ -1,35 +1,44 @@
-﻿using TerraMours.Domains.LoginDomain.Contracts.Common;
+﻿using AllInAI.Sharp.API.Dto;
+using AllInAI.Sharp.API.Req;
+using AllInAI.Sharp.API.Res.Vector;
+using TerraMours.Domains.LoginDomain.Contracts.Common;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Req;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Res;
 
 namespace TerraMours_Gpt_Api.Domains.GptDomain.IServices {
     public interface IVectorService {
-        Task<ApiResponse<List<VectorRes>>> GetList(int KnowledgeId);
+        Task<ApiResponse<List<VectorQueryRes>>> GetList(int knowledgeId);
 
         /// <summary>
         /// 删除
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<bool>> Delete(int id);
+        Task<ApiResponse<bool>> Delete(int knowledgeId, VectorDeleteReq req);
         /// <summary>
         /// 查询
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<List<VectorRes>>> Query(VectorQueryReq req);
+        Task<ApiResponse<VectorQueryRes>> Query(VectorQueryReq req, int knowledgeId);
         /// <summary>
         /// 更新
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<bool>> Update(VectorUpdateReq req);
+        Task<ApiResponse<bool>> Update(VectorUpdateReq req, int knowledgeId);
 
         /// <summary>
         /// 插入
         /// </summary>
         /// <param name="req"></param>
         /// <returns></returns>
-        Task<ApiResponse<VectorRes>> Upsert(VectorReq req);
+        Task<ApiResponse<VectorUpsertRes>> Upsert(VectorUpsertReq req, int knowledgeId);
+
+
+        Task<ApiResponse<List<string>>> ListIndexes(int knowledgeId);
+
+        Task<ApiResponse<bool>> CreateIndex(string name, int knowledgeId);
+        Task<ApiResponse<bool>> DeleteIndex(string name, int knowledgeId);
     }
 }

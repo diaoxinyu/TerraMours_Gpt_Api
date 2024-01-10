@@ -34,8 +34,8 @@ namespace Terramours_Gpt_Vector.Req
     }
     public record VectorDeleteReq : BaseReq
     {
-        public MetadataMap? Filter { get; init; }
+        public MetadataMap Filter { get; init; }
 
-        public string IndexNamespace { get; init; }
+        public string? IndexNamespace { get; init; }
     }
 }
