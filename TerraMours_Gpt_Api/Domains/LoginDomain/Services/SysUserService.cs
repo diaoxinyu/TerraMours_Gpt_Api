@@ -148,9 +148,9 @@ namespace TerraMours.Domains.LoginDomain.Services
             // 1. 定义需要使用到的Claims ,由前端传过来
 
             // 2. 从 appsettings.json 中读取SecretKey
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_sysSettings.Value.jwt.SecretKey));
-            secretKey = ExtendKeyLengthIfNeeded(secretKey, 32);
-;            // 3. 选择加密算法
+            var secretKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_sysSettings.Value.jwt.SecretKey));
+            //secretKey = ExtendKeyLengthIfNeeded(secretKey, 32);
+            // 3. 选择加密算法
             var algorithm = SecurityAlgorithms.HmacSha256;
 
             // 4. 生成Credentials

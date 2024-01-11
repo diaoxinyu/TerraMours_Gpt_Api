@@ -83,6 +83,7 @@ MapperConfiguration mapperConfig = new(cfg => {
     cfg.CreateMap<Order, OrderRes>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
     cfg.CreateMap<KnowledgeItem, KnowledgeRes>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
     cfg.CreateMap<KnowledgeReq, KnowledgeItem>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+    cfg.CreateMap<KnowledgeUpdateReq, KnowledgeItem>().ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 });
 //注册配置
 IMapper mapper = mapperConfig.CreateMapper();
@@ -229,8 +230,10 @@ builder.Services.AddSwaggerGen(options => {
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "TerraMours_Gpt_Api.xml"));
 });
 //添加认证  授权服务
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
-    options.TokenValidationParameters = new TokenValidationParameters() {
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters()
+    {
         ValidateIssuer = true,
         //ValidIssuer = builder.Configuration["JWT:Issuer"],
         ValidIssuer = sysSettings.jwt.Issuer,
@@ -242,6 +245,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"]))
     };
 });
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+//{
+//    options.Authority = sysSettings.jwt.Issuer;
+//    options.Audience = sysSettings.jwt.Audience;
+//});
 
 var app = builder.Build();
 

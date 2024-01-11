@@ -52,7 +52,8 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services
 
         public async Task<ApiResponse<bool>> Update(KnowledgeUpdateReq req, long userId)
         {
-            var res = _mapper.Map<KnowledgeItem>(req);
+            var res = await _dbContext.knowledgeItems.FirstOrDefaultAsync(m => m.KnowledgeId == req.KnowledgeId);
+            _mapper.Map(req,res);
             res.ModifyDate = DateTime.Now;
             res.ModifyID = userId;
             _dbContext.knowledgeItems.Update(res);
