@@ -40,5 +40,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.IServices {
 
         Task<ApiResponse<bool>> CreateIndex(string name, int knowledgeId);
         Task<ApiResponse<bool>> DeleteIndex(string name, int knowledgeId);
+
+        Task<ApiResponse<IndexStats>> DescribeIndexStats(int knowledgeId);
     }
 }

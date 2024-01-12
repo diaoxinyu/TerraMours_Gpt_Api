@@ -1,9 +1,11 @@
-﻿using AllInAI.Sharp.API.Req;
+﻿using AllInAI.Sharp.API.Dto;
+using AllInAI.Sharp.API.Req;
 using AllInAI.Sharp.API.Res.Vector;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Ocsp;
+using System.Xml.Linq;
 using TerraMours.Domains.LoginDomain.Contracts.Common;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Req;
 using TerraMours_Gpt_Api.Domains.GptDomain.IServices;
@@ -96,6 +98,13 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Controllers {
         {
             var knowledgeId = int.Parse(RouteData.Values["knowledgeId"].ToString());
             var res = await _vectorService.DeleteIndex(name, knowledgeId);
+            return Results.Ok(res);
+        }
+        [Authorize]
+        [HttpGet]
+        public async Task<IResult> DescribeIndexStats(){
+            var knowledgeId = int.Parse(RouteData.Values["knowledgeId"].ToString());
+            var res = await _vectorService.DescribeIndexStats(knowledgeId);
             return Results.Ok(res);
         }
     }

@@ -5,6 +5,9 @@ using AutoMapper;
 using IdentityModel;
 using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Ocsp;
+using System.Text.Encodings.Web;
+using System.Text.Json;
+using System.Text.Unicode;
 using System.Xml.Linq;
 using TerraMours.Domains.LoginDomain.Contracts.Common;
 using TerraMours.Framework.Infrastructure.EFCore;
@@ -64,6 +67,19 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             return ApiResponse<bool>.Success(true);
         }
 
+        public async Task<ApiResponse<IndexStats>> DescribeIndexStats(int knowledgeId)
+        {
+            var know = await _dbContext.knowledgeItems.FirstOrDefaultAsync(m => m.KnowledgeId == knowledgeId);
+            if (know == null)
+                return ApiResponse<IndexStats>.Fail("未找到对应知识库记录");
+            var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://controller.{know.NamespaceName}.pinecone.io" : know.BaseUrl;
+            AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
+            AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
+            var res= await vectorService.DescribeIndexStats();
+            return ApiResponse<IndexStats>.Success(res);
+        }
+
         public Task<ApiResponse<List<VectorQueryRes>>> GetList(int knowledgeId)
         {
             throw new NotImplementedException();
@@ -91,6 +107,10 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.NamespaceName}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
+            string json = JsonSerializer.Serialize(req, new JsonSerializerOptions()
+            {
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            });
             var res = await vectorService.Query(req);
             return ApiResponse<VectorQueryRes>.Success(res);
         }
