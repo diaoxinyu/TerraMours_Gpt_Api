@@ -1,4 +1,6 @@
-﻿using TerraMours.Domains.LoginDomain.Contracts.Common;
+﻿using AllInAI.Sharp.API.Req;
+using AllInAI.Sharp.API.Res;
+using TerraMours.Domains.LoginDomain.Contracts.Common;
 using TerraMours.Domains.LoginDomain.Contracts.Req;
 using TerraMours_Gpt.Domains.GptDomain.Contracts.Req;
 using TerraMours_Gpt.Domains.GptDomain.Contracts.Res;
@@ -48,6 +50,10 @@ namespace TerraMours_Gpt.Domains.GptDomain.IServices {
         Task<ApiResponse<bool>> DeletePromptOption(long promptId, long? userId);
         Task<ApiResponse<PagedRes<PromptOptionRes>>> PromptOptionList(PageReq page);
         Task<ApiResponse<IEnumerable<PromptOptionRes>>> AllPromptOptionList();
+        #endregion
+
+        #region 文本嵌入
+        Task<ApiResponse<EmbeddingRes>> Embedding(EmbeddingReq req, long? userId);
         #endregion
     }
 }

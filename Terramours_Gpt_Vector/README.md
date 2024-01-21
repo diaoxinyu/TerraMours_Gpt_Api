@@ -35,6 +35,7 @@
 ```
 Add-Migration update
 
+Add-Migration update -context FrameworkDbContext
 update-database
 ```
 

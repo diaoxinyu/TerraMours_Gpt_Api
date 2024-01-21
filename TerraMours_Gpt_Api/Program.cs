@@ -49,6 +49,7 @@ using TerraMours_Gpt_Api.Domains.GptDomain.Services;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Res;
 using TerraMours_Gpt_Api.Framework.Infrastructure.Contracts.GptModels;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Req;
+using Npgsql;
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
@@ -99,6 +100,7 @@ builder.Services.AddScoped<ISeedDataService, SeedDataService>();
 //gpt
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IGptOptionsService, GptOptionsService>();
 
 //支付宝pay
 builder.Services.AddScoped<IPayService, AliPayService>();
@@ -134,7 +136,9 @@ builder.Services.AddDbContext<FrameworkDbContext>(opt => {
 
     //var connStr = $"Host=localhost;Database=TerraMours;Username=postgres;Password=root";
     var connStr = dbConnStr;
-    opt.UseNpgsql(connStr);
+    opt.UseNpgsql(new NpgsqlDataSourceBuilder(connStr)
+                                .EnableDynamicJson()
+                                .Build());
     //设置EF默认AsNoTracking,EF Core不 跟踪
     opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
     if (isDev) {

@@ -11,6 +11,9 @@ using TerraMours_Gpt.Domains.GptDomain.IServices;
 using TerraMours_Gpt.Framework.Infrastructure.Middlewares;
 using TerraMours_Gpt.Domains.LoginDomain.Contracts.Common;
 using System.IO.Pipelines;
+using AllInAI.Sharp.API.Req;
+using AllInAI.Sharp.API.Res;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace TerraMours_Gpt_Api.Domains.GptDomain.Controllers {
     [Route("api/v1/[controller]/[action]")]
@@ -408,7 +411,14 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Controllers {
         #endregion
 
         #region 文本嵌入
-
+        [Authorize]
+        [HttpPost]
+        public async Task<IResult> Embedding(EmbeddingReq req)
+        {
+            var userId = long.Parse(HttpContext.User.FindFirstValue(ClaimTypes.UserData));
+            var res = await _chatService.Embedding(req,userId);
+            return Results.Ok(res);
+        }
         #endregion
     }
 }
