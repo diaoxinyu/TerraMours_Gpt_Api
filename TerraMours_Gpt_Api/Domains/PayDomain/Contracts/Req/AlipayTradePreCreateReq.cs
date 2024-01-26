@@ -20,7 +20,7 @@ namespace TerraMours_Gpt.Domains.PayDomain.Contracts.Req
         public string TotalAmount { get; set; }*/
 
         [Display(Name = "notify_url")]
-        public string NotifyUrl { get; set; }
+        public string? NotifyUrl { get; set; }
 
         /// <summary>
         /// 商品id
@@ -29,11 +29,11 @@ namespace TerraMours_Gpt.Domains.PayDomain.Contracts.Req
         /// <summary>
         /// 商品名称
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
         /// <summary>
         /// 商品描述
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
         /// <summary>
         /// 商品价格
         /// </summary>
@@ -49,7 +49,7 @@ namespace TerraMours_Gpt.Domains.PayDomain.Contracts.Req
         /// <summary>
         /// 用户ID
         /// </summary>
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         /// <summary>
         /// 是否是Vip(包月会员)
         /// </summary>

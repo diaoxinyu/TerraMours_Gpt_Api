@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Org.BouncyCastle.Ocsp;
+using System.Security.Claims;
 using System.Xml.Linq;
 using TerraMours.Domains.LoginDomain.Contracts.Common;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Req;
@@ -105,6 +106,35 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Controllers {
         public async Task<IResult> DescribeIndexStats(){
             var knowledgeId = int.Parse(RouteData.Values["knowledgeId"].ToString());
             var res = await _vectorService.DescribeIndexStats(knowledgeId);
+            return Results.Ok(res);
+        }
+        /// <summary>
+        /// Embadding后插入
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost]
+        public async Task<IResult> EmbaddingUpsert(VectorUpsertReq req)
+        {
+            var knowledgeId = int.Parse(RouteData.Values["knowledgeId"].ToString());
+            var userId = long.Parse(HttpContext.User.FindFirstValue(ClaimTypes.UserData));
+
+            var res = await _vectorService.EmbaddingUpsert(req, knowledgeId,userId);
+            return Results.Ok(res);
+        }
+        /// <summary>
+        /// Embadding后查询
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost]
+        public async Task<IResult> EmbaddingQuery(VectorQueryReq req)
+        {
+            var knowledgeId = int.Parse(RouteData.Values["knowledgeId"].ToString());
+            var userId = long.Parse(HttpContext.User.FindFirstValue(ClaimTypes.UserData));
+            var res = await _vectorService.EmbaddingQuery(req, knowledgeId, userId);
             return Results.Ok(res);
         }
     }

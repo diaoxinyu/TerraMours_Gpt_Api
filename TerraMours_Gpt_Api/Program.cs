@@ -140,7 +140,9 @@ builder.Services.AddDbContext<FrameworkDbContext>(opt => {
                                 .EnableDynamicJson()
                                 .Build());
     //设置EF默认AsNoTracking,EF Core不 跟踪
-    opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    //opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    //设置是否启用缓存
+    opt.EnableServiceProviderCaching(false);
     if (isDev) {
         //启用此选项后，EF Core将在日志中包含敏感数据，例如实体的属性值。这对于调试和排查问题非常有用。
         opt.EnableSensitiveDataLogging();
@@ -168,8 +170,6 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Seq(seqUrl)
     .CreateLogger();
 builder.Host.UseSerilog(Log.Logger);
-
-
 
 // 可用 启动自动验证 但是对外方法也要加东西 体验不好
 builder.Services.AddFluentValidationAutoValidation();

@@ -1,4 +1,9 @@
-﻿namespace TerraMours.Framework.Infrastructure.Contracts.SystemModels
+﻿using Microsoft.EntityFrameworkCore;
+using TerraMours.Domains.LoginDomain.Contracts.Res;
+using TerraMours.Framework.Infrastructure.EFCore;
+using TerraMours.Framework.Infrastructure.Redis;
+
+namespace TerraMours.Framework.Infrastructure.Contracts.SystemModels
 {
     /// <summary>
     /// 系统用户表
@@ -188,9 +193,11 @@
             return this;
         }
 
-        //todo: 还没有写获取当前登录用户方法，需要增加修改人，修改时间等方法
-        //修改用户：
-
+        public async Task<List<KeyValueRes>> GetUserNameList(IDistributedCacheHelper _helper, FrameworkDbContext _dbContext)
+        {
+            var userList = await _helper.GetOrCreateAsync("GetUserNameList", async options => { return await _dbContext.SysUsers.Select(m => new KeyValueRes(m.UserId, m.UserName)).ToListAsync(); });
+            return userList;
+        }
 
     }
 }

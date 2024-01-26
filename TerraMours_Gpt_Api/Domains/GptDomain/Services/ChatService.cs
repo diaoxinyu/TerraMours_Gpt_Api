@@ -744,7 +744,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
 
         public async Task<ApiResponse<AllInAI.Sharp.API.Res.EmbeddingRes>> Embedding(EmbeddingReq req, long? userId)
         {
-            openAiOptions = _dbContext.GptOptions.AsNoTracking().Any() ? _dbContext.GptOptions.AsNoTracking().FirstOrDefault().OpenAIOptions : openAiOptions;
+            openAiOptions = _dbContext.GptOptions.AsNoTracking().Any() ? _dbContext.GptOptions.FirstOrDefault().OpenAIOptions : openAiOptions;
             var keyOption = openAiOptions.OpenAI.KeyList.Where(m => m.IsEnable == true && m.ModelTypes.Contains("gpt-3.5-turbo")).FirstOrDefault();
             var authOption = new AuthOption()
             {

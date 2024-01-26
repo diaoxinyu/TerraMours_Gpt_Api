@@ -63,6 +63,7 @@ namespace TerraMours_Gpt.Framework.Infrastructure.Middlewares {
                 var keyList =  _helper.GetOrCreate("GetKey",  options =>
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<FrameworkDbContext>();
+                    Console.WriteLine("创建dbContext");
                     var gptOptions = dbContext.GptOptions
                         .AsNoTracking()
                         .OrderBy(m => m.GptOptionsId)
