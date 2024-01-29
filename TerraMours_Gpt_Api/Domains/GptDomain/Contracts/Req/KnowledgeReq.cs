@@ -19,7 +19,21 @@
         /// <summary>
         /// 工作空间
         /// </summary>
-        public string? NamespaceName { get; set; }
+        public string? WorkSpace { get; set; }
+        /// <summary>
+        /// 命名空间
+        /// </summary>
+        public string? NameSpace { get; set; }
+
+        public string? BaseUrl { get; set; }
+        /// <summary>
+        /// 商品图片路径
+        /// </summary>
+        public string? ImagePath { get; set; }
+        /// <summary>
+        /// 说明
+        /// </summary>
+        public string? Remark { get; set; }
     }
     public class KnowledgeUpdateReq
     {
@@ -43,6 +57,20 @@
         /// <summary>
         /// 工作空间
         /// </summary>
-        public string? NamespaceName { get; set; }
+        public string? WorkSpace { get; set; }
+        /// <summary>
+        /// 命名空间
+        /// </summary>
+        public string? NameSpace { get; set; }
+
+        public string? BaseUrl { get; set; }
+        /// <summary>
+        /// 商品图片路径
+        /// </summary>
+        public string? ImagePath { get; set; }
+        /// <summary>
+        /// 说明
+        /// </summary>
+        public string? Remark { get; set; }
     }
 }

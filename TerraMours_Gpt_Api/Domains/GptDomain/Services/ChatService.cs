@@ -62,7 +62,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
             if (req.ConversationId == null || req.ConversationId == 0) {
                 var conversation = await _dbContext.ChatConversations.AddAsync(
                     new ChatConversation(req.Prompt.Length < 5 ? req.Prompt : $"{req.Prompt.Substring(0, 5)}...",
-                        req.UserId));
+                        req.UserId,null));
                 req.ConversationId = conversation.Entity.ConversationId;
             }
 
@@ -217,7 +217,7 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
             if (req.ConversationId == null || req.ConversationId == 0) {
                 var conversation = await _dbContext.ChatConversations.AddAsync(
                     new ChatConversation(req.Prompt.Length < 5 ? req.Prompt : $"{req.Prompt.Substring(0, 5)}...",
-                        req.UserId));
+                        req.UserId,null));
                 req.ConversationId = conversation.Entity.ConversationId;
             }
 
@@ -585,9 +585,9 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
         #endregion
 
         #region 会话列表
-        public async Task<ApiResponse<ChatConversationRes>> AddChatConversation(string conversationName, long? userId)
+        public async Task<ApiResponse<ChatConversationRes>> AddChatConversation(string conversationName, int? knowledgeId, long? userId)
         {
-            var newRecord = new ChatConversation(conversationName, userId);
+            var newRecord = new ChatConversation(conversationName, userId,knowledgeId);
             await _dbContext.ChatConversations.AddAsync(newRecord);
             await _dbContext.SaveChangesAsync();
             var res = _mapper.Map<ChatConversationRes>(newRecord);
@@ -627,6 +627,15 @@ namespace TerraMours_Gpt.Domains.GptDomain.Services
             var total = await query.CountAsync();
             var item = await query.Skip((page.PageIndex - 1) * page.PageSize).Take(page.PageSize).ToListAsync();
             var res = _mapper.Map<IEnumerable<ChatConversationRes>>(item);
+            foreach(var resItem in res)
+            {
+                var know =await _dbContext.knowledgeItems.FirstOrDefaultAsync(m => m.KnowledgeId == resItem.KnowledgeId);
+                if(know != null)
+                {
+                    resItem.KnowledgeName=know.KnowledgeName;
+                    resItem.ImagePath=know.ImagePath;
+                }
+            }
             return ApiResponse<PagedRes<ChatConversationRes>>.Success(new PagedRes<ChatConversationRes>(res, total, page.PageIndex, page.PageSize));
         }
         #endregion

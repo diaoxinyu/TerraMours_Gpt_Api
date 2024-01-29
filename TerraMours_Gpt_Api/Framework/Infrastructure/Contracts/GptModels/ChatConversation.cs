@@ -24,11 +24,14 @@ namespace TerraMours_Gpt.Framework.Infrastructure.Contracts.GptModels
         /// </summary>
         public long? UserId { get; set; }
 
+        public int? KnowledgeId { get; set; }
+
         public ChatConversation() {
         }
 
-        public ChatConversation(string? conversationName, long? userId) {
+        public ChatConversation(string? conversationName, long? userId, int? knowledgeId) {
             ConversationName = conversationName;
+            KnowledgeId = knowledgeId;
             UserId = userId;
             //EntityBase
             Enable = true;

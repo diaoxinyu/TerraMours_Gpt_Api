@@ -1379,7 +1379,7 @@ namespace TerraMours_Gpt.Migrations
                     b.Property<long?>("ModifyID")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("NamespaceName")
+                    b.Property<string>("WorkSpace")
                         .HasColumnType("text");
 
                     b.Property<int?>("OrderNo")

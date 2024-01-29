@@ -28,10 +28,18 @@ namespace TerraMours_Gpt_Api.Framework.Infrastructure.Contracts.GptModels
         /// <summary>
         /// 工作空间
         /// </summary>
-        public string?  NamespaceName { get; set; }
+        public string?  WorkSpace { get; set; }
+        /// <summary>
+        /// 命名空间
+        /// </summary>
+        public string? NameSpace { get; set; }
         /// <summary>
         /// 代理地址，只在pgvector中使用
         /// </summary>
         public string? BaseUrl {  get; set; }
+        /// <summary>
+        /// 商品图片路径
+        /// </summary>
+        public string? ImagePath { get; set; }
     }
 }

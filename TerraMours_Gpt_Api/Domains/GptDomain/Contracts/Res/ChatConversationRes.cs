@@ -9,5 +9,8 @@
         /// 会话名称
         /// </summary>
         public string? ConversationName { get; set; }
+        public int KnowledgeId { get; set; }
+        public string? KnowledgeName { get; set; }
+        public string? ImagePath { get; set; }
     }
 }

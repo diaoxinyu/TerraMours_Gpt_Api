@@ -272,9 +272,9 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Controllers {
         /// <returns></returns>
         [Authorize]
         [HttpGet]
-        public async Task<IResult> AddChatConversation(string conversationName) {
+        public async Task<IResult> AddChatConversation(string conversationName,int? knowledgeId) {
             var userId = long.Parse(HttpContext.User.FindFirstValue(ClaimTypes.UserData));
-            var res = await _chatService.AddChatConversation(conversationName, userId);
+            var res = await _chatService.AddChatConversation(conversationName, knowledgeId, userId);
             return Results.Ok(res);
         }
 

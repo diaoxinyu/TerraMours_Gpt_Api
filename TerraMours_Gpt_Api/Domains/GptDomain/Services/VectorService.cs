@@ -37,7 +37,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             if (know == null)
                 return ApiResponse<bool>.Fail("未找到对应知识库记录");
             var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
-            string baseUrl = type== AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone? $"https://controller.{know.NamespaceName}.pinecone.io":know.BaseUrl;
+            string baseUrl = type== AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone? $"https://controller.{know.WorkSpace}.pinecone.io":know.BaseUrl;
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
             await vectorService.CreateIndex(name, 1536, Metric.Cosine);
@@ -50,7 +50,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             if (know == null)
                 return ApiResponse<bool>.Fail("未找到对应知识库记录");
             var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
-            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.NamespaceName}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.WorkSpace}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
             await vectorService.Delete(req);
@@ -63,7 +63,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             if (know == null)
                 return ApiResponse<bool>.Fail("未找到对应知识库记录");
             var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
-            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://controller.{know.NamespaceName}.pinecone.io" : know.BaseUrl;
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://controller.{know.WorkSpace}.pinecone.io" : know.BaseUrl;
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
             await vectorService.DeleteIndex(name);
@@ -76,7 +76,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             if (know == null)
                 return ApiResponse<IndexStats>.Fail("未找到对应知识库记录");
             var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
-            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.NamespaceName}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/"; 
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.WorkSpace}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/"; 
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
             var res= await vectorService.DescribeIndexStats();
@@ -90,7 +90,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             if (know == null)
                 return ApiResponse<VectorQueryRes>.Fail("未找到对应知识库记录");
             var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
-            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.NamespaceName}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.WorkSpace}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
 
@@ -115,7 +115,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             if (know == null)
                 return ApiResponse<VectorUpsertRes>.Fail("未找到对应知识库记录");
             var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
-            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.NamespaceName}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.WorkSpace}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
             foreach (var item in req.Vectors)
@@ -144,7 +144,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             if (know == null)
                 return ApiResponse<List<string>>.Fail("未找到对应知识库记录");
             var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
-            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://controller.{know.NamespaceName}.pinecone.io" : know.BaseUrl;
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://controller.{know.WorkSpace}.pinecone.io" : know.BaseUrl;
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
             var res = await vectorService.ListIndexes();
@@ -157,7 +157,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             if (know == null)
                 return ApiResponse<VectorQueryRes>.Fail("未找到对应知识库记录");
             var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
-            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.NamespaceName}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.WorkSpace}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
             string json = JsonSerializer.Serialize(req, new JsonSerializerOptions()
@@ -174,7 +174,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             if (know == null)
                 return ApiResponse<bool>.Fail("未找到对应知识库记录");
             var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
-            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.NamespaceName}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.WorkSpace}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
             await vectorService.Update(req);
@@ -187,7 +187,7 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services {
             if (know == null)
                 return ApiResponse<VectorUpsertRes>.Fail("未找到对应知识库记录");
             var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
-            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.NamespaceName}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.WorkSpace}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
             AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
             AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
             var res = await vectorService.Upsert(req);

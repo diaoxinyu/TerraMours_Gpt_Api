@@ -81,5 +81,18 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Controllers
             var res = await _knowledgeService.Upsert(req, userId);
             return Results.Ok(res);
         }
+
+        /// <summary>
+        /// 验证
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        [Authorize]
+        [HttpPost]
+        public async Task<IResult> DescribeIndexStats(KnowledgeReq req)
+        {
+            var res = await _knowledgeService.DescribeIndexStats(req);
+            return Results.Ok(res);
+        }
     }
 }

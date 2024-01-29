@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AllInAI.Sharp.API.Dto;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using TerraMours.Domains.LoginDomain.Contracts.Common;
@@ -34,6 +35,16 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.Services
             _dbContext.knowledgeItems.Update(res);
              await _dbContext.SaveChangesAsync();
             return ApiResponse<bool>.Success(true);
+        }
+
+        public async Task<ApiResponse<IndexStats>> DescribeIndexStats(KnowledgeReq know)
+        {
+            var type = (AllInAI.Sharp.API.Enums.AITypeEnum)know.KnowledgeType;
+            string baseUrl = type == AllInAI.Sharp.API.Enums.AITypeEnum.Pinecone ? $"https://{know.IndexName}.{know.WorkSpace}.pinecone.io" : $"{know.BaseUrl}/{know.IndexName}/";
+            AuthOption authOption = new AuthOption() { Key = know.ApiKey, BaseUrl = baseUrl, AIType = type };
+            AllInAI.Sharp.API.Service.VectorService vectorService = new AllInAI.Sharp.API.Service.VectorService(authOption);
+            var res = await vectorService.DescribeIndexStats();
+            return ApiResponse<IndexStats>.Success(res);
         }
 
         public async Task<ApiResponse<List<KnowledgeRes>>> GetList(long userId)

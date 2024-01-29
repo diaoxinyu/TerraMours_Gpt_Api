@@ -1,4 +1,5 @@
-﻿using TerraMours.Domains.LoginDomain.Contracts.Common;
+﻿using AllInAI.Sharp.API.Dto;
+using TerraMours.Domains.LoginDomain.Contracts.Common;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Req;
 using TerraMours_Gpt_Api.Domains.GptDomain.Contracts.Res;
 
@@ -33,7 +34,11 @@ namespace TerraMours_Gpt_Api.Domains.GptDomain.IServices
         /// <param name="req"></param>
         /// <returns></returns>
         Task<ApiResponse<KnowledgeRes>> Upsert(KnowledgeReq req, long userId);
-
-
+        /// <summary>
+        /// 验证
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        Task<ApiResponse<IndexStats>> DescribeIndexStats(KnowledgeReq req);
     }
 }
